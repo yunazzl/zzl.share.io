@@ -1,6 +1,10 @@
 ## Welcome to GitHub Pages
 
+<<<<<<< HEAD
 [js学习笔记01](./js_markdown_01)
+=======
+[index](./index.html)
+>>>>>>> a0b21bc2c2c22b0248f48b66811cc186f20965b8
 
 You can use the [editor on GitHub](https://github.com/yunazzl/zzl.share.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
