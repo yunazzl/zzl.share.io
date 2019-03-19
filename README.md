@@ -18,4 +18,9 @@
 
 [js学习笔记05](./js_markdown_05)
 
-&&、||和！
+&&、ll和！；函数声明；for in 的另类用法；try、catch、finally
+
+[js学习笔记06](./js_markdown_06)
+
+对象继承性(原型继承)；属性的访问、删除
+
