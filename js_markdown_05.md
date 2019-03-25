@@ -23,7 +23,7 @@ var max = max_width || preferences.max_width || 500
 
 ### 2.函数声明
 
-**函数声明不能在if、while等任何语句内。**
+**函数声明不能在if、while等任何语句内。但是函数声明可以。**
 
 ```js
 var func1 = function() {} //func1是变量指向函数

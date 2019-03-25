@@ -1,3 +1,5 @@
+## js学习笔记08
+
 ## 函数
 
 函数每次调用都会拥有一个本次调用的上下文：this
@@ -170,3 +172,50 @@ g(3)//=＞6:this.x绑定到1，y绑定到2，z绑定到3
 
 这种绑定参数，减少新函数的参数的技术叫做**柯里化**
 
+### 不完全函数
+
+```js
+//实现一个工具函数将类数组对象（或对象）转换为真正的数组
+//在后面的示例代码中用到了这个方法将arguments对象转换为真正的数组
+function array(a,n){return Array.prototype.slice.call(a,n||0);}
+//这个函数的实参传递至左侧，类似于bind
+function partialLeft(f/*,...*/){
+	var args=arguments;//保存外部的实参数组
+	return function(){//并返回这个函数
+		var a=array(args,1);//开始处理外部的第1个args
+		a=a.concat(array(arguments));//然后增加所有的内部实参
+		return f.apply(this,a);//然后基于这个实参列表调用f()
+	};
+}
+//这个函数的实参传递至右侧
+function partialRight(f/*,...*/){
+  var args=arguments;//保存外部实参数组
+  return function(){//返回这个函数
+    var a=array(arguments);//从内部参数开始
+    a=a.concat(array(args,1));//然后从外部第1个args开始添加
+    return f.apply(this,a);//最后基于这个实参列表调用f()
+  };
+}
+//这个函数的实参被用做模板
+//实参列表中的undefined值都被填充
+function partial(f/*,...*/){
+  var args=arguments;//保存外部实参数组
+  return function(){
+    var a=array(args,1);//从外部args开始
+    var i=0,j=0;//遍历args，从内部实参填充undefined值
+    for(;i＜a.length;i++)
+    if(a[i]===undefined)a[i]=arguments[j++];//现在将剩下的内部实参都追加进去
+    a=a.concat(array(arguments,j))
+    return f.apply(this,a);
+  };
+}
+//这个函数带有三个实参
+var f=function(x,y,z){return x*(y-z);};//注意这三个不完全调用之间的区别
+partialLeft(f,2)(3,4)//=＞-2:绑定第一个实参:2*(3-4)
+partialRight(f,2)(3,4)//=＞6:绑定最后一个实参:3*(4-2)
+partial(f,undefined,2)(3,4)//=＞-6:绑定中间的实参:3*(2-4)
+```
+
+### 函数记忆(缓存结果)
+
+使用闭包的特性，记忆每次运行的结果
