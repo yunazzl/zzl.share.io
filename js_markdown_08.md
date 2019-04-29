@@ -219,3 +219,233 @@ partial(f,undefined,2)(3,4)//=＞-6:绑定中间的实参:3*(2-4)
 ### 函数记忆(缓存结果)
 
 使用闭包的特性，记忆每次运行的结果
+
+### ES6扩展
+
+**函数参数默认值**
+
+```js
+function Point(x=0, y=0) {
+	this.x = x;
+	this.y = y;
+}
+//解构默认参数
+function foo({x, y=5} = {}) {//更优
+  console.log(x, y)
+}
+function foo1({x, y} = {x=0, y=5}) {
+  console.log(x, y)
+}
+```
+
+如果省略的默认参数在中间，传入undefined依然可以使用默认参数，null就不行
+
+```js
+function f(x, y=5, z) {
+ return [x, y, z]
+}
+f() //[undefined, 5, undefined]
+f(1)//[1, 5, undefined]
+f(1, undefined, 2) //[1, 5, 2]
+```
+
+如果默认参数是个变量，其作用域是：声明变量(this，其它参数)>全局变量>局部变量
+
+```js
+var x=1;
+function f(x, y=x) {
+	console.log(y);
+}
+f(2) // 2
+function f1(y=x) {
+	let x=2
+	console.log(y)
+}
+f1()//1   如果此时全局变量x不存在，则会报错
+function f2(x=x) {
+  console.log(x)
+}
+f2() //也会报错 属于暂时性死区(let，const)x把自己的默认值锁死了
+
+let foo = 'outer'
+function bar(func = x=>foo) {//此时的foo用的是全局变量foo
+  let foo = 'inner'; //这里的foo，在bar函数调用时才声明
+  console.log(func()); 
+}
+bar();//outer
+
+//复杂的例子
+function foo(x, y = function() {x=2;}) {
+  var x = 3;
+  y(); //修改了foo参数x
+  console.log(x); //输出的是局域变量x：3
+}
+foo() //3
+```
+
+**如果默认参数是调用函数，这个函数不是声明的时候执行，而是调用的时候执行**
+
+```js
+function logIfMissing() {
+  console.log('missing params')
+}
+function foo(mustBeProvided = logIfMissing()) {
+  return mustBeProvided;
+}
+foo() //'missing params' return undefined
+foo(1) //return 1
+```
+
+**函数的length属性**
+
+函数的length属性值，是函数参数的个数，减去默认参数的个数。
+
+```js
+(function(a){}).length //1
+(function(a=5){}).length //0
+(function(a, b, c=5){}).length //2
+function func(...argus) {
+}
+func.length//0 ;argus 相当于一个默认值-空数组
+//默认参数不在末尾, 那它后面跟随的参数也不会被计算入length
+(function(a, b=1, c){}).length //1
+```
+
+**rest参数**
+
+引入rest获取函数的多余参数，代替arguments
+
+```js
+function add(...values) {
+  let sum = 0;
+  for (var val of values) {
+    sum += val;
+  }
+  return sum;
+}
+add(2, 5, 3) //10
+//arguments变量的写法
+function sortNumber() {
+  return Array.prototype.slice.call(arguments).sort();
+}
+//rest参数的写法
+const sortNumber = (...numbers) => numbers.sort();
+```
+
+rest参数之后不能再有其他参数，否则会报错
+
+**扩展运算符 ...**
+
+它好比rest参数的逆运算(解开数组)，主要用于函数的调用
+
+```js
+console.log(...[1, 2, 3]) //1 2 3
+//等同于console.log(1, 2, 3)
+console.log(1, ...[2, 3, 4], 5) //1 2 3 4 5
+//类数组也行
+[...document.querySelectorAll('div')] //[<div>, <div>, <div>] 
+
+function add(x, y) {
+  return x + y;
+}
+var numbers = [4, 38];
+add(...numbers) //42
+
+//代替apply方法
+function f(x, y, z) {
+  //...
+}
+var args = [0,1,2];
+//ES5的写法
+f.apply(null, args);
+//ES6的写法
+f(...args)
+//数组最大值
+Math.max(...[14, 3, 77]) //等同于Math.max(14, 3, 77)
+//数组添加数组
+var arr1 = [0, 1, 2]
+var arr2 = [3, 4, 5]
+arr1.push(...arr2) //等同于arr1.push(3, 4, 5)
+//合并数组
+var arr3 = ['d', 'e']
+[...arr1, ...arr2, ...arr3] //[0, 1, 2, 3, 4, 5, 'd', 'e']
+//字符串
+[...'hello'] //['h', 'e', 'l', 'l', 'o']
+```
+
+**函数name属性**
+
+```js
+//匿名函数
+var func = function() {};
+//ES5
+func.name //''
+//ES6
+func.name //'func'
+//具名函数
+const bar = function baz() {};
+//ES5
+func.name //'baz'
+//ES6
+func.name //'baz'
+//绑定函数
+function foo() {};
+foo.bind({}).name // "bound foo"
+(function(){}).bind({}).name // "bound "
+```
+
+**箭头函数**
+
+```js
+var f = v=>v;
+//等同于
+var f = function(v) {
+	return v;
+}
+
+var f = () => 5;
+var f = (num1, num2) => num1+num2;
+```
+
+**箭头函数内的this，就是定义时的this，而不是调用时的this**
+
+箭头函数没有this
+
+```js
+function foo() {
+	setTimeout(()=> {
+		console.log('id', this.id)
+	}, 100)
+}
+var id = 21;
+var obj = {id:42}
+foo.call(obj) 
+//调用的时候才声明定时
+//这个时候的this是obj，所以打印的是obj的id
+```
+
+**函数绑定**
+
+并列双冒号(::)，代替bind方法
+
+```js
+foo::bar; //返回新函数
+//等同于
+bar.bind(foo);
+
+foo::bar(...arguments);//直接调用
+//等同于
+bar.apply(foo, arguments)
+
+var method = ::obj.foo;
+//等同于
+var method = obj::obj.foo;
+//等同于
+var method = obj.foo.bind(obj);
+
+//链式写法
+let { find, html } = jake;
+
+documents.querySelectorAll('div.myClass')::find('p')::html('hahaha');
+```
+

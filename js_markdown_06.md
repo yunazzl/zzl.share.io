@@ -103,8 +103,8 @@ propertyIsEnumerable()只有检测到是自有属性且这个属性的枚举性�
 var o={x:1}
 "x"in o;//true："x"是o的属性
 "toString"in o;//true：o继承toString属性
-o.hasProperty('x')//true
-o.hasProperty('toString')//false
+o.hasOwnProperty('x')//true
+o.hasOwnProperty('toString')//false
 o.propertyIsEnumerable("x");//true:o有一个可枚举的自有属性x
 o.propertyIsEnumerable("y");//false:y是继承来的
 Object.prototype.propertyIsEnumerable("toString");//false:不可枚举
@@ -149,5 +149,153 @@ Object.seal() //封锁对象。对象变为不可扩展且所有属性不可配�
 Object.isSealed()
 Object.freeze() //冻结，对象变为不可扩展，所有属性不可配置，所有数据属性变为只读
 Object.isFrozen()
+```
+
+### ES6扩展
+
+**对象属性的简洁表示法**
+
+```js
+var foo = 'bar'
+var baz = {foo}
+baz // {foo: 'bar'}
+
+//等同于
+var baz = {foo: foo}
+
+var o = {
+  method() {
+    return 'hello'
+  }
+}
+//等同于
+var o = {
+  method: function() {
+    return 'hello'
+  }
+}
+```
+
+**属性的赋值（setter）&取值器（getter）**
+
+```js
+var cart = {
+	_wheels: 4,
+	get wheels () {
+		return this._wheels;
+	},
+	set wheels(value) {
+		if (value < this._wheels) {
+			throw new Error('value too small')
+		}
+		this._wheels = value
+	}
+}
+```
+
+**表达式作为属性名**
+
+```js
+let propkey = 'foo'
+let lastWord = 'last word'
+let obj = {
+	[propkey]: true,
+	['a' + 'bc']: 123,
+	[lastWord]: 'world'
+}
+
+//等同于
+let obj = {
+  foo: true,
+  abc: 123,
+  'last word': 'world'
+}
+obj['ab'+'c'] //123
+obj[lastWord] //'world'
+obj['last world'] //'world'
+```
+
+**对象合并Object.assign()**
+
+```js
+var target = { a: 1}
+var source1 = {b: 2}
+var source2 = {c: 3}
+
+Object.assign(target, source1, source2)
+target // { a:1, b:2, c:3 }
+
+//后面的值会覆盖前面的值
+var target = { a: 1, b: 1 }
+var source1 = {b: 2, c:2}
+var source2 = {c: 3}
+
+Object.assign(target, source1, source2)
+target // { a:1, b:2, c:3 }
+
+//如果参数不是对象，则会先转成对象，参数不能是undefined或者null
+
+//常见用途
+//批量赋值
+class Point {
+  constructor(x, y) {
+    Object.assign(this, {x, y})
+  }
+}
+Object.assign(SomeClass.prototype, {
+  someMethod(arg1, arg2) {
+  },
+  anotherMethod() {
+  }
+})
+//克隆对象
+function clone(origin) {
+  return Object.assign({}, origin)//只能克隆非继承的值
+}
+function clone(origin) {
+  let originProto = Object.getPrototypeOf(orgin)//提取原型
+  return Object.assign(Object.create(originProto), origin)//创建兄弟对象，并赋值。可以保持继承的值
+}
+const merge = (...sources) => Object.assign({}, ...sources)//合并多个对象
+//指定默认值
+const DEFAULTS = {
+  logLevel: 0,
+  outputFormat: 'html'
+}
+function processContent(options) {
+  let options = Object.assign({}, DEFAULTS, options)
+}
+```
+
+**对象的扩展运算符**
+
+Rest结构赋值不会拷贝继承自原型的对象
+
+```js
+let {x, y, ...z} = {x:1, y:2, a:3, b:4 }
+z // {a: 3, b:4}
+
+var o = Object.creat({x: 1, y: 2});
+o.z = 3;
+let {x, ...{y, z}} = o;
+x// 1 这是普通的解构
+y// undefined rest不能解构继承的属性
+z// 3 rest解构自身属性z
+
+//运用
+let aClone = {...a}
+//等同于
+let aClone = Object.assign({}, a)
+
+//rest对象里有get方法，这个函数会被执行
+let runtimeError = {
+  ...a,
+  ...{
+    get x() {
+      throws new Error('throw new')
+    }
+  }
+}
+//x被执行，抛出一个异常
 ```
 

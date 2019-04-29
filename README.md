@@ -1,5 +1,7 @@
 ## Welcome to zzl Study Note
 
+### JavaScript学习
+
 [js学习笔记01](./js_markdown_01)
 
 分号补全；浮点数误差；NaN
@@ -26,7 +28,7 @@
 
 [js学习笔记07](./js_markdown_07)
 
-数组
+数组；ES5的数组扩展；ES6的数组扩展
 
 [js学习笔记08](./js_markdown_08)
 
@@ -42,3 +44,12 @@
 
 [客户端js01](./js_markdown_11)
 
+[ES6学习笔记01](./js_es6_01)
+
+let&const;解构赋值、对象的解构赋值、函数参数的解构赋值
+
+### CSS学习
+
+[css学习笔记01](./css_markdown_01)
+
+基本介绍

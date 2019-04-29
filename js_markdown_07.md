@@ -175,3 +175,106 @@ Array.isArray([])//=>true
 Array.isArray({})//=>false
 ```
 
+### ES6扩展
+
+**Array.from()：将类数组川味真正的数组**
+
+```js
+let arrayLike = {
+	'0': 'a',
+  '1': 'b',
+  '2': 'c',
+  length: 3
+}
+//ES5的写法
+let arr1 = [].slice.call(arrayLike);//['a', 'b', 'c']
+//ES6的写法
+let arr2 = Array.from(arrayLike);//['a', 'b', 'c']
+//ES6数据结构方法--扩展
+let [...arr3] = [...arrayLike];//['a', 'b', 'c']
+let arr4 = [...arrayLike];//['a', 'b', 'c']
+```
+
+Array.from()可以接收第二个参数，实现类似map的方法
+
+```js
+let spans = document.querySelectorAll('span.name')
+
+//map()
+let names1 = Array.prototype.map.call(spans, s=>s.textContect);
+
+//Array.from()
+let names2 = Array.from(spans, s=>s.textContent);
+```
+
+Array.from()还可以接收第三个参数，用于map函数的this
+
+**Array.of():将一组值，组装成数组**
+
+```js
+Array.of(3, 11, 8) //[3, 11, 8]
+Array.of(3) //[3]
+Array.of() //[]
+```
+
+替代方法
+
+```js
+function ArrayOf() {
+	return [].slice.call(arguments)
+}
+```
+
+**copyWithin()数组内部复制**
+
+copyWithin(target, start=0, end=this.length)
+
+target：被覆盖的起始位置
+
+start：复制的起点
+
+end：复制的终点
+
+```js
+[1, 2, 3, 4, 5, 6].copyWithin(0, 3, 5)
+//[4, 5, 3, 4, 5, 6] ,取3-5元素[4, 5]，从0开始覆盖
+```
+
+**find()和findIndex()**
+
+find找到符合条件的第一个元素，参数就是判断条件(函数)，没有找到则返回undefined
+
+```js
+[1, 4, -5, 10].find( n=>n<0 ) //-5
+```
+
+findIndex找到符合条件的第一个元素的位置，参数就是判断条件(函数)，没有找到则返回-1
+
+```js
+[1, 4, -5, 10].findIndex( n=>n<0 ) //2
+```
+
+**fill()填充数组**
+
+fill(value, start=0, end=this.length)
+
+```js
+['a', 'b', 'c'].fill(7) //[7, 7, 7]
+['a', 'b', 'c'].fill(7, 1, 3) //['a', 7, 'c']
+```
+
+**includes()**
+
+```js
+[1, 2, 3].includes(2) //true
+[1, 2, 3].includes(4) //false
+[1, 2, NaN].includes(NaN) //true
+```
+
+可以传入第二个参数，作为搜索起始位置
+
+```js
+[1, 2, 3].includes(3, 3) //false
+[1, 2, 3].includes(3, -1) //true
+```
+
