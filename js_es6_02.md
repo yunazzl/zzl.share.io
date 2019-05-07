@@ -398,6 +398,13 @@ for (let x of set) {
 //red green blue
 ```
 
+**应用**
+
+```js
+let set = new Set([3, 5, 2, 2, 5, 5])
+let unique = [...set] //[3, 5, 2]
+```
+
 **WeakSet类似Set，但是成员只能是对象，而且是弱引用。成员对象有可能被回收了，所以不可遍历。**
 
 ```js
@@ -458,5 +465,18 @@ map.has('name')//true
 map.get('name')//'zhangsan'
 map.has('title')//true
 map.get('title')//'author'
+```
+
+**键值比较的时候，比较的是内存地址**
+
+```js
+var map = new Map()
+var k1 = ['a']
+var k2 = ['a']
+
+map.set(k1, 111).set(k2, 222)
+
+map.get(k1) // 111
+map.get(k2) // 222
 ```
 
